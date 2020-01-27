@@ -15,7 +15,7 @@
     "clean": "rm -rf _dist",
     "format": "yarn lint --fix",
     "lint": "eslint --ext .ts --ignore-path .gitignore ./lib",
-    "prepare": "yarn build",
+    "prepare": "yarn clean && yarn build",
     "test": "jest"
   },
   "dependencies": {
