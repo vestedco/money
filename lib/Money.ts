@@ -1,7 +1,7 @@
 import Big from 'big.js'
 import isString from 'lodash.isstring'
-import { MoneyJSON} from './MoneyJSON'
-import { CurrencyMismatchError} from './CurrencyMismatchError'
+import { MoneyJSON } from './MoneyJSON'
+import { CurrencyMismatchError } from './CurrencyMismatchError'
 
 type Biggable = number | string | Big
 
@@ -50,7 +50,7 @@ export class Money {
     return Money.fromAmount(this.units.round(), this.currency)
   }
 
-  plus(other: Biggable | Money): Money {
+  plus (other: Biggable | Money): Money {
     if (other instanceof Money) {
       if (other.currency !== this.currency) {
         throw new CurrencyMismatchError()
