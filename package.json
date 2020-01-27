@@ -1,0 +1,12 @@
+{
+  "name": "@vested/money",
+  "version": "0.0.1",
+  "description": "A wrapper class to handle arbitrarily large values of money\"",
+  "main": "_dist/index.js",
+  "repository": "https://github.com/vestedco/money",
+  "author": "Matt Venables <matt@venabl.es>",
+  "license": "MIT",
+  "files": [
+    "_dist/**/*"
+  ]
+}

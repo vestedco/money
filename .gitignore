@@ -1,0 +1,9 @@
+# Dependencies
+node_modules
+yarn-error.log
+
+# Build artifacts
+_dist
+
+# Test artifacts
+coverage
