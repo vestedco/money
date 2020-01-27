@@ -3,10 +3,18 @@
   "version": "0.0.1",
   "description": "A wrapper class to handle arbitrarily large values of money\"",
   "main": "_dist/index.js",
+  "types": "_dist/index.d.ts",
   "repository": "https://github.com/vestedco/money",
   "author": "Matt Venables <matt@venabl.es>",
   "license": "MIT",
   "files": [
     "_dist/**/*"
-  ]
+  ],
+  "scripts": {
+    "build": "tsc",
+    "clean": "rm -rf _dist"
+  },
+  "devDependencies": {
+    "typescript": "^3.7.5"
+  }
 }
