@@ -4,6 +4,7 @@ import { MoneyJSON } from './MoneyJSON'
 import { CurrencyMismatchError } from './CurrencyMismatchError'
 
 type Biggable = number | string | Big
+type RoundingMode = 'down' | 'half-even' | 'half-up' | 'up'
 
 export class Money {
   cents: Big
@@ -46,8 +47,12 @@ export class Money {
     return this.units.toFixed(size)
   }
 
-  roundToUnit (): Money {
-    return Money.fromAmount(this.units.round(), this.currency)
+  roundToUnit (mode: RoundingMode = 'half-up'): Money {
+    return Money.fromAmount(this.units.round(0, roundingMode(mode)), this.currency)
+  }
+
+  roundToCent (mode: RoundingMode = 'half-up'): Money {
+    return new Money(this.cents.round(0, roundingMode(mode)), this.currency)
   }
 
   plus (other: Biggable | Money): Money {
@@ -133,4 +138,18 @@ export class Money {
 
     return this.cents.lt(other)
   }
+}
+
+function roundingMode (str: RoundingMode): number {
+  if (str === 'down') {
+    return 0
+  }
+  if (str === 'half-even') {
+    return 2
+  }
+  if (str === 'up') {
+    return 3
+  }
+
+  return 1
 }
