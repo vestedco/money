@@ -110,10 +110,75 @@ describe('Money.prototype.toFixed()', () => {
 
 describe('Money.prototype.roundToUnit()', () => {
   it('rounds to the nearest unit', () => {
-    const money = new Money('1999', 'USD')
+    const money = Money.fromAmount('19.99', 'USD')
     const rounded = money.roundToUnit()
 
     expect(rounded.units.toString()).toEqual('20')
+  })
+
+  it('allows rounding down', () => {
+    const money = Money.fromAmount('19.99', 'USD')
+    const rounded = money.roundToUnit('down')
+
+    expect(rounded.units.toString()).toEqual('19')
+  })
+
+  it('allows rounding half-up', () => {
+    const money = Money.fromAmount('18.50', 'USD')
+    const rounded = money.roundToUnit('half-up')
+
+    expect(rounded.units.toString()).toEqual('19')
+  })
+
+  it('allows rounding half-even', () => {
+    const money = Money.fromAmount('18.50', 'USD')
+    const rounded = money.roundToUnit('half-even')
+
+    expect(rounded.units.toString()).toEqual('18')
+  })
+
+  it('allows rounding up', () => {
+    const money = Money.fromAmount('19.01', 'USD')
+    const rounded = money.roundToUnit('up')
+
+    expect(rounded.units.toString()).toEqual('20')
+  })
+})
+
+describe('Money.prototype.roundToCent()', () => {
+  it('rounds to the nearest unit', () => {
+    const money = Money.fromAmount('0.999', 'USD')
+    const rounded = money.roundToCent()
+
+    expect(rounded.cents.toString()).toEqual('100')
+  })
+
+  it('allows rounding down', () => {
+    const money = Money.fromAmount('0.999', 'USD')
+    const rounded = money.roundToCent('down')
+
+    expect(rounded.cents.toString()).toEqual('99')
+  })
+
+  it('allows rounding half-up', () => {
+    const money = Money.fromAmount('0.985', 'USD')
+    const rounded = money.roundToCent('half-up')
+
+    expect(rounded.cents.toString()).toEqual('99')
+  })
+
+  it('allows rounding half-even', () => {
+    const money = Money.fromAmount('0.985', 'USD')
+    const rounded = money.roundToCent('half-even')
+
+    expect(rounded.cents.toString()).toEqual('98')
+  })
+
+  it('allows rounding up', () => {
+    const money = Money.fromAmount('0.991', 'USD')
+    const rounded = money.roundToCent('up')
+
+    expect(rounded.cents.toString()).toEqual('100')
   })
 })
 
