@@ -2,9 +2,11 @@ import { Money, CurrencyMismatchError } from '../lib'
 import Big from 'big.js'
 
 describe('Money.constructor', () => {
-  it('casts cents to a Big', () => {
+  it('casts units to a Big', () => {
     const money = new Money(200, 'USD')
-    expect(money.cents).toBeInstanceOf(Big)
+    expect(money.units).toBeInstanceOf(Big)
+    expect(money.units.eq('200')).toBe(true)
+    expect(money.cents.eq('20000')).toBe(true)
   })
 
   it('defaults to USD as the currency', () => {
@@ -13,7 +15,13 @@ describe('Money.constructor', () => {
     expect(money.currency).toBe('USD')
   })
 
-  it('throws if given invalid cents', () => {
+  it('strips commas', () => {
+    const money = new Money('1,000,000')
+
+    expect(money.units).toEqual(new Big('1000000'))
+  })
+
+  it('throws if given invalid units', () => {
     expect(() => {
       // eslint-disable-next-line no-new
       new Money('WRONG')
@@ -79,6 +87,19 @@ describe('Money.fromJSON()', () => {
     expect(money.currency.toString()).toEqual('EUR')
   })
 
+  it('accepts a MoneyJSON object with units', () => {
+    const json = {
+      units: '20',
+      cents: '2000',
+      currency: 'EUR'
+    }
+
+    const money = Money.fromJSON(json)
+
+    expect(money.cents.toString()).toEqual('2000')
+    expect(money.currency.toString()).toEqual('EUR')
+  })
+
   it('throws if the JSON does not provide cents', () => {
     const json = {
       cents: 'nope',
@@ -110,6 +131,7 @@ describe('Money.prototype.toJSON()', () => {
   it('returns a JSON represneation of the money object', () => {
     const money = Money.fromAmount('20', 'EUR')
     expect(money.toJSON()).toEqual({
+      units: '20.00',
       cents: '2000',
       currency: 'EUR'
     })
@@ -258,6 +280,217 @@ describe('Money.prototype.times', () => {
 
     expect(() => {
       money.times(other)
+    }).toThrow(CurrencyMismatchError)
+  })
+})
+
+describe('Money.prototype.div', () => {
+  it('divides two Money objects', () => {
+    const money = Money.fromCents('300', 'USD')
+    const other = Money.fromCents('200', 'USD')
+
+    expect(money.div(other)).toEqual(Money.fromCents('150', 'USD'))
+  })
+
+  it('divides the current unit by the other number', () => {
+    const money = Money.fromCents('300', 'USD')
+
+    expect(money.div('2')).toEqual(Money.fromCents(150, 'USD'))
+  })
+
+  it('throws if dividing a different currency', () => {
+    const money = Money.fromCents('1234', 'USD')
+    const other = Money.fromCents('1234', 'EUR')
+
+    expect(() => {
+      money.div(other)
+    }).toThrow(CurrencyMismatchError)
+  })
+})
+
+describe('Money.prototype.eq', () => {
+  it('returns true if the two Money objects are the same', () => {
+    const money = Money.fromAmount('2.00', 'USD')
+    const other = Money.fromCents('200', 'USD')
+
+    expect(money.eq(other)).toBe(true)
+  })
+
+  it('returns true if the Money units are the same as the passed Big', () => {
+    const money = Money.fromAmount('2.00', 'USD')
+    const other = new Big(2)
+
+    expect(money.eq(other)).toBe(true)
+  })
+
+  it('returns true if the Money units are the same as the passed string', () => {
+    const money = Money.fromAmount('2.00', 'USD')
+
+    expect(money.eq('2')).toBe(true)
+  })
+
+  it('returns true if the Money units are the same as the passed number', () => {
+    const money = Money.fromAmount('2.00', 'USD')
+
+    expect(money.eq(2)).toBe(true)
+  })
+
+  it('returns false if this currency is not the same as the passed currency', () => {
+    const money = Money.fromAmount('2.00', 'USD')
+    const other = Money.fromCents('200', 'EUR')
+
+    expect(money.eq(other)).toBe(false)
+  })
+
+  it('returns false if the two Money objects are not the same', () => {
+    const money = Money.fromAmount('2.00', 'USD')
+    const other = Money.fromCents('201', 'USD')
+
+    expect(money.eq(other)).toBe(false)
+  })
+
+  it('returns false if the Money units are not the same as the passed Big', () => {
+    const money = Money.fromAmount('2.00', 'USD')
+    const other = new Big(2.01)
+
+    expect(money.eq(other)).toBe(false)
+  })
+
+  it('returns false if the Money units are not the same as the passed string', () => {
+    const money = Money.fromAmount('2.00', 'USD')
+
+    expect(money.eq('2.01')).toBe(false)
+  })
+
+  it('returns false if the Money units are not the same as the passed number', () => {
+    const money = Money.fromAmount('2.00', 'USD')
+
+    expect(money.eq(2.01)).toBe(false)
+  })
+})
+
+describe('Money.prototype.lt', () => {
+  it('returns true if this Money object is less than the passed Money object', () => {
+    const money = Money.fromAmount('2.00', 'USD')
+    const other = Money.fromCents('201', 'USD')
+
+    expect(money.lt(other)).toBe(true)
+  })
+
+  it('returns true if the Money units are less than the passed Big', () => {
+    const money = Money.fromAmount('2.00', 'USD')
+    const other = new Big(2.01)
+
+    expect(money.lt(other)).toBe(true)
+  })
+
+  it('returns true if the Money units are less than the passed string', () => {
+    const money = Money.fromAmount('2.00', 'USD')
+
+    expect(money.lt('2.01')).toBe(true)
+  })
+
+  it('returns true if the Money units are less than the passed number', () => {
+    const money = Money.fromAmount('2.00', 'USD')
+
+    expect(money.lt(2.01)).toBe(true)
+  })
+
+  it('returns false if this Money object is not less than the passed Money object', () => {
+    const money = Money.fromAmount('2.00', 'USD')
+    const other = Money.fromCents('200', 'USD')
+
+    expect(money.lt(other)).toBe(false)
+  })
+
+  it('returns false if the Money units are not less than the passed Big', () => {
+    const money = Money.fromAmount('2.00', 'USD')
+    const other = new Big(1.99)
+
+    expect(money.lt(other)).toBe(false)
+  })
+
+  it('returns false if the Money units are not less than the passed string', () => {
+    const money = Money.fromAmount('2.00', 'USD')
+
+    expect(money.lt('1')).toBe(false)
+  })
+
+  it('returns false if the Money units are not less than the passed number', () => {
+    const money = Money.fromAmount('2.00', 'USD')
+
+    expect(money.lt(2)).toBe(false)
+  })
+
+  it('throws a CurrencyMismatchError if given a Money object of another currency', () => {
+    const money = Money.fromAmount('2.00', 'USD')
+    const other = Money.fromCents('201', 'EUR')
+
+    expect(() => {
+      money.lt(other)
+    }).toThrow(CurrencyMismatchError)
+  })
+})
+
+describe('Money.prototype.gt', () => {
+  it('returns true if this Money object is greater than the passed Money object', () => {
+    const money = Money.fromAmount('2.00', 'USD')
+    const other = Money.fromCents('199', 'USD')
+
+    expect(money.gt(other)).toBe(true)
+  })
+
+  it('returns true if the Money units are greater than the passed Big', () => {
+    const money = Money.fromAmount('2.00', 'USD')
+    const other = new Big(1.99)
+
+    expect(money.gt(other)).toBe(true)
+  })
+
+  it('returns true if the Money units are greater than the passed string', () => {
+    const money = Money.fromAmount('2.00', 'USD')
+
+    expect(money.gt('1.99')).toBe(true)
+  })
+
+  it('returns true if the Money units are greater than the passed number', () => {
+    const money = Money.fromAmount('2.00', 'USD')
+
+    expect(money.gt(1.99)).toBe(true)
+  })
+
+  it('returns false if this Money object is not greater than the passed Money object', () => {
+    const money = Money.fromAmount('2.00', 'USD')
+    const other = Money.fromCents('200', 'USD')
+
+    expect(money.gt(other)).toBe(false)
+  })
+
+  it('returns false if the Money units are not greater than the passed Big', () => {
+    const money = Money.fromAmount('2.00', 'USD')
+    const other = new Big(2.01)
+
+    expect(money.gt(other)).toBe(false)
+  })
+
+  it('returns false if the Money units are not greater than the passed string', () => {
+    const money = Money.fromAmount('2.00', 'USD')
+
+    expect(money.gt('3')).toBe(false)
+  })
+
+  it('returns false if the Money units are not greater than the passed number', () => {
+    const money = Money.fromAmount('2.00', 'USD')
+
+    expect(money.gt(2)).toBe(false)
+  })
+
+  it('throws a CurrencyMismatchError if given a Money object of another currency', () => {
+    const money = Money.fromAmount('2.00', 'USD')
+    const other = Money.fromCents('199', 'EUR')
+
+    expect(() => {
+      money.gt(other)
     }).toThrow(CurrencyMismatchError)
   })
 })

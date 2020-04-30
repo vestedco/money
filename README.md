@@ -15,7 +15,7 @@ yarn add @vested/money
 ```js
 import { Money } from '@vested/money'
 
-const oneFifty = Money.fromCents(150, 'USD')
+const oneFifty = new Money('1.50', 'USD')
 // => $1.50
 
 const threeDollars = oneFifty.times(2)
@@ -45,27 +45,27 @@ fourDollars.eq(twoDollars.plus(twoDollars))
 
 ## Methods
 
-### new Money(cents, currency = 'USD): Money
-### Money.fromCents(cents, currency = 'USD'): Money
+### new Money(units, currency = 'USD): Money
+### Money.fromAmount(units, currency = 'USD'): Money
 
-Builds a new Money object, taking the smallest unit (cents) as the first argument and an optional currency string as a second argument (default 'USD'). For example, the following builds a $3.50 USD Money object:
+Builds a new Money object, taking the number of units (dollars) as the first argument and an optional currency string as a second argument (default 'USD'). For example, the following builds a $3.50 USD Money object:
 
 ```js
-const money = new Money(350, 'USD')
+const money = new Money(3.50, 'USD')
 // => 3.50
 
-const money2 = Money.fromCents(350, 'USD')
+const money2 = Money.fromAmount('3.50', 'USD')
 // => 3.50
 ```
 
 You can pass a string, number, or Big as the first argument.
 
-### Money.fromAmount(units, currency = 'USD'): Money
+### Money.fromCents(units, currency = 'USD'): Money
 
-Builds a new Money object, taking a single unit (dollars) as the first argument and an optional currency string as a second argument (default 'USD'). For example, the following builds a $3.50 USD Money object:
+Builds a new Money object, taking subunits (cents) as the first argument and an optional currency string as a second argument (default 'USD'). For example, the following builds a $3.50 USD Money object:
 
 ```js
-const money = Money.fromAmount('3.50', 'USD')
+const money = Money.fromCents('350', 'USD')
 // => $3.50
 ```
 
@@ -77,6 +77,7 @@ Builds a new Money object from a given MoneyJSON object, generally created by th
 
 ```js
 const money = Money.fromJSON({
+  units: '3.50',
   cents: '350',
   currency: 'USD'
 })
@@ -97,7 +98,7 @@ const money = Money.zero('USD')
 Returns a Big object representing the cents of the Money object
 
 ```js
-const money = Money.fromCents(3.50, 'EUR')
+const money = Money.fromAmount(3.50, 'EUR')
 money.cents
 // => '350'
 ```
@@ -129,7 +130,7 @@ Returns a MoneyJSON representation of a Money object
 ```js
 const money = Money.fromAmount('3.50')
 money.toJSON()
-// => { cents: '350', currency: 'USD' }
+// => { units: '3.50', cents: '350', currency: 'USD' }
 ```
 
 ### money.toFixed(size = 2): string
@@ -194,25 +195,27 @@ money.roundToCent('half-even')
 
 ### money.plus(other): Money
 
-Returns a new Money object by adding the other value. The argument can be another Money object, a string (cents), a number (cents) or a Big object (cents).
+Returns a new Money object by adding the other value. The argument must be another Money object.
 
 If a Money object of a different currency is provided, a `CurrencyMismatchError` will be thrown.
 
 ```js
 const money = Money.fromAmount('3.50')
-money.plus('200')
+const money2 = Money.fromAmount('2.00')
+money.plus(money2)
 // => Money<$5.50>
 ```
 
 ### money.minus(other): Money
 
-Returns a new Money object by subtracting the other value. The argument can be another Money object, a string (cents), a number (cents) or a Big object (cents).
+Returns a new Money object by subtracting the other value. The argument must be another Money object.
 
 If a Money object of a different currency is provided, a `CurrencyMismatchError` will be thrown.
 
 ```js
 const money = Money.fromAmount('3.50')
-money.minus('200')
+const money2 = Money.fromAmount('2.00')
+money.minus(money2)
 // => Money<$1.50>
 ```
 
@@ -242,51 +245,51 @@ money.div('2')
 
 ### money.eq(other): boolean
 
-Returns `true` if this Money object is equal to the other, and `false` otherwise. The argument can be another Money object, a string (cents), a number (cents), or a Big (cents).
+Returns `true` if this Money object is equal to the other, and `false` otherwise. The argument can be another Money object, a string (units), a number (cents), or a Big (cents).
 
 If a Money object of a different currency is provided, a `CurrencyMismatchError` will be thrown.
 
 ```js
 const money = Money.fromAmount('3.50')
-money.eq('350')
+money.eq('3.50')
 // => true
 money.eq(Money.fromCents('350'))
 // => true
-money.eq(175)
+money.eq(1.75)
 // => false
 ```
 
 ### money.gt(other): boolean
 
-Returns `true` if this Money object is greater than the other, and `false` otherwise. The argument can be another Money object, a string (cents), a number (cents), or a Big (cents).
+Returns `true` if this Money object is greater than the other, and `false` otherwise. The argument can be another Money object, a string (units), a number (cents), or a Big (cents).
 
 If a Money object of a different currency is provided, a `CurrencyMismatchError` will be thrown.
 
 ```js
 const money = Money.fromAmount('3.50')
-money.gt('175')
+money.gt('1.75')
 // => true
 money.gt(Money.fromCents('350'))
 // => false
-money.gt('350')
+money.gt('3.50')
 // => false
 ```
 
 ### money.lt(other): boolean
 
-Returns `true` if this Money object is less than the other, and `false` otherwise. The argument can be another Money object, a string (cents), a number (cents), or a Big (cents).
+Returns `true` if this Money object is less than the other, and `false` otherwise. The argument can be another Money object, a string (units), a number (cents), or a Big (cents).
 
 If a Money object of a different currency is provided, a `CurrencyMismatchError` will be thrown.
 
 ```js
 const money = Money.fromAmount('3.50')
-money.lt('500')
+money.lt('5.00')
 // => true
 money.lt(Money.fromCents('350'))
 // => false
-money.lt('350')
+money.lt('3.50')
 // => false
-money.lt('175')
+money.lt('1.75')
 // => false
 ```
 
