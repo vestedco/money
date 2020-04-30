@@ -202,18 +202,30 @@ describe('Money.prototype.roundToCent()', () => {
   })
 })
 
+describe('Money.prototype.plus', () => {
+  it('adds two Money objects', () => {
+    const money = Money.fromCents('200', 'USD')
+    const other = Money.fromCents('300', 'USD')
+
+    expect(money.plus(other)).toEqual(Money.fromCents(500, 'USD'))
+  })
+
+  it('throws if adding a different currency', () => {
+    const money = Money.fromCents('1234', 'USD')
+    const other = Money.fromCents('1234', 'EUR')
+
+    expect(() => {
+      money.plus(other)
+    }).toThrow(CurrencyMismatchError)
+  })
+})
+
 describe('Money.prototype.minus', () => {
   it('subtracts two Money objects', () => {
     const money = Money.fromCents('1234', 'USD')
     const other = Money.fromCents('1230', 'USD')
 
     expect(money.minus(other)).toEqual(Money.fromCents(4, 'USD'))
-  })
-
-  it('subtracts cents from the current cents', () => {
-    const money = Money.fromCents('1234', 'USD')
-
-    expect(money.minus('30')).toEqual(Money.fromCents(1204, 'USD'))
   })
 
   it('throws if subtracting a different currency', () => {

@@ -59,28 +59,20 @@ export class Money {
     return Money.fromCents(this.cents.round(0, roundingMode(mode)), this.currency)
   }
 
-  plus (other: Biggable | Money): Money {
-    if (other instanceof Money) {
-      if (other.currency !== this.currency) {
-        throw new CurrencyMismatchError()
-      }
-
-      return this.plus(other.cents)
+  plus (other: Money): Money {
+    if (other.currency !== this.currency) {
+      throw new CurrencyMismatchError()
     }
 
-    return Money.fromCents(this.cents.plus(other), this.currency)
+    return Money.fromCents(this.cents.plus(other.cents), this.currency)
   }
 
-  minus (other: Biggable | Money): Money {
-    if (other instanceof Money) {
-      if (other.currency !== this.currency) {
-        throw new CurrencyMismatchError()
-      }
-
-      return this.minus(other.cents)
+  minus (other: Money): Money {
+    if (other.currency !== this.currency) {
+      throw new CurrencyMismatchError()
     }
 
-    return Money.fromCents(this.cents.minus(other), this.currency)
+    return Money.fromCents(this.cents.minus(other.cents), this.currency)
   }
 
   times (other: Biggable | Money): Money {
