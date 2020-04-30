@@ -15,7 +15,7 @@ yarn add @vested/money
 ```js
 import { Money } from '@vested/money'
 
-const oneFifty = new Money(150, 'USD')
+const oneFifty = Money.fromCents(150, 'USD')
 // => $1.50
 
 const threeDollars = oneFifty.times(2)
@@ -45,12 +45,16 @@ fourDollars.eq(twoDollars.plus(twoDollars))
 
 ## Methods
 
-### new Money(cents, currency = 'USD'): Money
+### new Money(cents, currency = 'USD): Money
+### Money.fromCents(cents, currency = 'USD'): Money
 
 Builds a new Money object, taking the smallest unit (cents) as the first argument and an optional currency string as a second argument (default 'USD'). For example, the following builds a $3.50 USD Money object:
 
 ```js
 const money = new Money(350, 'USD')
+// => 3.50
+
+const money2 = Money.fromCents(350, 'USD')
 // => 3.50
 ```
 
@@ -93,7 +97,7 @@ const money = Money.zero('USD')
 Returns a Big object representing the cents of the Money object
 
 ```js
-const money = new Money(3.50, 'EUR')
+const money = Money.fromCents(3.50, 'EUR')
 money.cents
 // => '350'
 ```
@@ -113,7 +117,7 @@ money.currency
 Returns a Big object representing the units of the Money object
 
 ```js
-const money = new Money(350, 'EUR')
+const money = Money.fromCents(350, 'EUR')
 money.units
 // => '3.50'
 ```
@@ -246,7 +250,7 @@ If a Money object of a different currency is provided, a `CurrencyMismatchError`
 const money = Money.fromAmount('3.50')
 money.eq('350')
 // => true
-money.eq(new Money('350'))
+money.eq(Money.fromCents('350'))
 // => true
 money.eq(175)
 // => false
@@ -262,7 +266,7 @@ If a Money object of a different currency is provided, a `CurrencyMismatchError`
 const money = Money.fromAmount('3.50')
 money.gt('175')
 // => true
-money.gt(new Money('350'))
+money.gt(Money.fromCents('350'))
 // => false
 money.gt('350')
 // => false
@@ -278,7 +282,7 @@ If a Money object of a different currency is provided, a `CurrencyMismatchError`
 const money = Money.fromAmount('3.50')
 money.lt('500')
 // => true
-money.lt(new Money('350'))
+money.lt(Money.fromCents('350'))
 // => false
 money.lt('350')
 // => false
