@@ -21,6 +21,26 @@ describe('Money.constructor', () => {
   })
 })
 
+describe('Money.fromCents', () => {
+  it('casts cents to a Big', () => {
+    const money = Money.fromCents(200, 'USD')
+    expect(money.cents).toBeInstanceOf(Big)
+  })
+
+  it('defaults to USD as the currency', () => {
+    const money = Money.fromCents(100)
+
+    expect(money.currency).toBe('USD')
+  })
+
+  it('throws if given invalid cents', () => {
+    expect(() => {
+      // eslint-disable-next-line no-new
+      Money.fromCents('WRONG')
+    }).toThrow()
+  })
+})
+
 describe('Money.fromAmount()', () => {
   it('converts whole dollars to cents', () => {
     const money = Money.fromAmount(200, 'USD')
@@ -98,12 +118,12 @@ describe('Money.prototype.toJSON()', () => {
 
 describe('Money.prototype.toFixed()', () => {
   it('returns a string of the units to a given 2 decimal places by default', () => {
-    const money = new Money('12345', 'EUR')
+    const money = Money.fromCents('12345', 'EUR')
     expect(money.toFixed()).toEqual('123.45')
   })
 
   it('gives a string to any specified decimal places', () => {
-    const money = new Money('12345', 'EUR')
+    const money = Money.fromCents('12345', 'EUR')
     expect(money.toFixed(3)).toEqual('123.450')
   })
 })
@@ -184,21 +204,21 @@ describe('Money.prototype.roundToCent()', () => {
 
 describe('Money.prototype.minus', () => {
   it('subtracts two Money objects', () => {
-    const money = new Money('1234', 'USD')
-    const other = new Money('1230', 'USD')
+    const money = Money.fromCents('1234', 'USD')
+    const other = Money.fromCents('1230', 'USD')
 
-    expect(money.minus(other)).toEqual(new Money(4, 'USD'))
+    expect(money.minus(other)).toEqual(Money.fromCents(4, 'USD'))
   })
 
   it('subtracts cents from the current cents', () => {
-    const money = new Money('1234', 'USD')
+    const money = Money.fromCents('1234', 'USD')
 
-    expect(money.minus('30')).toEqual(new Money(1204, 'USD'))
+    expect(money.minus('30')).toEqual(Money.fromCents(1204, 'USD'))
   })
 
   it('throws if subtracting a different currency', () => {
-    const money = new Money('1234', 'USD')
-    const other = new Money('1234', 'EUR')
+    const money = Money.fromCents('1234', 'USD')
+    const other = Money.fromCents('1234', 'EUR')
 
     expect(() => {
       money.minus(other)
@@ -208,21 +228,21 @@ describe('Money.prototype.minus', () => {
 
 describe('Money.prototype.times', () => {
   it('multiplies two Money objects', () => {
-    const money = new Money('400', 'USD')
-    const other = new Money('200', 'USD')
+    const money = Money.fromCents('400', 'USD')
+    const other = Money.fromCents('200', 'USD')
 
-    expect(money.times(other)).toEqual(new Money('800', 'USD'))
+    expect(money.times(other)).toEqual(Money.fromCents('800', 'USD'))
   })
 
   it('multiplies the current unit by the other number', () => {
-    const money = new Money('300', 'USD')
+    const money = Money.fromCents('300', 'USD')
 
-    expect(money.times('2')).toEqual(new Money(600, 'USD'))
+    expect(money.times('2')).toEqual(Money.fromCents(600, 'USD'))
   })
 
   it('throws if multiplying a different currency', () => {
-    const money = new Money('1234', 'USD')
-    const other = new Money('1234', 'EUR')
+    const money = Money.fromCents('1234', 'USD')
+    const other = Money.fromCents('1234', 'EUR')
 
     expect(() => {
       money.times(other)
