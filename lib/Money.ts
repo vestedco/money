@@ -7,41 +7,46 @@ type Biggable = number | string | Big
 type RoundingMode = 'down' | 'half-even' | 'half-up' | 'up'
 
 export class Money {
-  readonly cents: Big
+  readonly units: Big
   readonly currency: string
 
-  constructor (cents: Biggable, currency = 'USD') {
-    this.cents = new Big(cents)
+  constructor (units: Biggable, currency = 'USD') {
+    if (isString(units)) {
+      units = units.replace(/,/g, '')
+    }
+
+    this.units = new Big(units)
     this.currency = currency
   }
 
   static fromCents (cents: Biggable, currency = 'USD'): Money {
-    return new this(cents, currency)
+    cents = new Big(cents)
+    return new this(cents.div(100), currency)
   }
 
   static fromAmount (amount: Biggable, currency = 'USD'): Money {
-    if (isString(amount)) {
-      amount = amount.replace(/,/, '')
-    }
-
-    const dollars = new Big(amount)
-    return Money.fromCents(dollars.times(100), currency)
+    return new this(amount, currency)
   }
 
   static fromJSON (json: MoneyJSON): Money {
+    if (json.units) {
+      return Money.fromAmount(json.units, json.currency)
+    }
+
     return Money.fromCents(json.cents, json.currency)
   }
 
   static zero (currency = 'USD'): Money {
-    return Money.fromCents(0, currency)
+    return Money.fromAmount(0, currency)
   }
 
-  get units (): Big {
-    return this.cents.div(100)
+  get cents (): Big {
+    return this.units.times(100)
   }
 
   toJSON (): MoneyJSON {
     return {
+      units: this.toFixed(),
       cents: this.cents.toFixed(0),
       currency: this.currency
     }
@@ -52,7 +57,7 @@ export class Money {
   }
 
   roundToUnit (mode: RoundingMode = 'half-up'): Money {
-    return Money.fromAmount(this.units.round(0, roundingMode(mode)), this.currency)
+    return new Money(this.units.round(0, roundingMode(mode)), this.currency)
   }
 
   roundToCent (mode: RoundingMode = 'half-up'): Money {
@@ -64,7 +69,7 @@ export class Money {
       throw new CurrencyMismatchError()
     }
 
-    return Money.fromCents(this.cents.plus(other.cents), this.currency)
+    return Money.fromAmount(this.units.plus(other.units), this.currency)
   }
 
   minus (other: Money): Money {
@@ -72,7 +77,7 @@ export class Money {
       throw new CurrencyMismatchError()
     }
 
-    return Money.fromCents(this.cents.minus(other.cents), this.currency)
+    return Money.fromAmount(this.units.minus(other.units), this.currency)
   }
 
   times (other: Biggable | Money): Money {
@@ -84,7 +89,7 @@ export class Money {
       return this.times(other.units)
     }
 
-    return Money.fromCents(this.cents.times(other), this.currency)
+    return Money.fromAmount(this.units.times(other), this.currency)
   }
 
   div (other: Biggable | Money): Money {
@@ -96,7 +101,7 @@ export class Money {
       return this.div(other.units)
     }
 
-    return Money.fromCents(this.cents.div(other), this.currency)
+    return Money.fromAmount(this.units.div(other), this.currency)
   }
 
   eq (other: Biggable | Money): boolean {
@@ -105,10 +110,10 @@ export class Money {
         return false
       }
 
-      return this.gt(other.cents)
+      return this.eq(other.units)
     }
 
-    return this.cents.gt(other)
+    return this.units.eq(other)
   }
 
   gt (other: Biggable | Money): boolean {
@@ -117,10 +122,10 @@ export class Money {
         throw new CurrencyMismatchError()
       }
 
-      return this.gt(other.cents)
+      return this.gt(other.units)
     }
 
-    return this.cents.gt(other)
+    return this.units.gt(other)
   }
 
   lt (other: Biggable | Money): boolean {
@@ -129,10 +134,10 @@ export class Money {
         throw new CurrencyMismatchError()
       }
 
-      return this.lt(other.cents)
+      return this.lt(other.units)
     }
 
-    return this.cents.lt(other)
+    return this.units.lt(other)
   }
 }
 
