@@ -7,8 +7,8 @@ type Biggable = number | string | Big
 type RoundingMode = 'down' | 'half-even' | 'half-up' | 'up'
 
 export class Money {
-  cents: Big
-  currency: string
+  readonly cents: Big
+  readonly currency: string
 
   constructor (cents: Biggable, currency = 'USD') {
     this.cents = new Big(cents)
