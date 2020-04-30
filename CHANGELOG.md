@@ -1,4 +1,4 @@
-# Unreleased
+# v2.0.0
 
 * [BREAKING] Update constructor to accept units, not cents.
 * [BREAKING] `plus` and `minus` methods only accept other Money objects.
