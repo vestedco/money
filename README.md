@@ -221,9 +221,7 @@ money.minus(money2)
 
 ### money.times(other): Money
 
-Returns a new Money object by multiplying the other value. The argument can be another Money object, a string, a number, or a Big.
-
-If a Money object of a different currency is provided, a `CurrencyMismatchError` will be thrown.
+Returns a new Money object by multiplying the other value. The argument can be a string, a number, or a Big.
 
 ```js
 const money = Money.fromAmount('3.50')
@@ -233,9 +231,7 @@ money.times('2')
 
 ### money.div(other): Money
 
-Returns a new Money object by dividing by the other value. The argument can be another Money object, a string, a number, or a Big.
-
-If a Money object of a different currency is provided, a `CurrencyMismatchError` will be thrown.
+Returns a new Money object by dividing by the other value. The argument can be a string, a number, or a Big.
 
 ```js
 const money = Money.fromAmount('3.50')
