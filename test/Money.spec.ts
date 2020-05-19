@@ -127,6 +127,14 @@ describe('Money.zero()', () => {
   })
 })
 
+describe('Money.prototype.toString()', () => {
+  it('returns a string representation of the Money object', () => {
+    const money = Money.fromAmount('12.34', 'EUR')
+
+    expect(money.toString()).toEqual('12.34 EUR')
+  })
+})
+
 describe('Money.prototype.toJSON()', () => {
   it('returns a JSON represneation of the money object', () => {
     const money = Money.fromAmount('20', 'EUR')

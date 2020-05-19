@@ -46,6 +46,10 @@ export class Money {
     return this.units.times(100)
   }
 
+  toString (): string {
+    return `${this.units.toFixed(2)} ${this.currency}`
+  }
+
   toJSON (): MoneyJSON {
     return {
       units: this.toFixed(),
