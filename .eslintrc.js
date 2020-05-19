@@ -16,6 +16,6 @@ module.exports = {
     "@typescript-eslint/no-use-before-define": ["error", {
       "functions": false
     }],
-    "@typescript-eslint/strict-boolean-expressions": "warn"
+    "@typescript-eslint/strict-boolean-expressions": "off"
   }
 };
