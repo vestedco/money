@@ -17,6 +17,8 @@ export class Money {
 
     this.units = new Big(units)
     this.currency = currency
+
+    Object.freeze(this)
   }
 
   static fromCents (cents: Biggable, currency = 'USD'): Money {
