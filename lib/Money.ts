@@ -86,27 +86,11 @@ export class Money {
     return Money.fromAmount(this.units.minus(other.units), this.currency)
   }
 
-  times (other: Biggable | Money): Money {
-    if (other instanceof Money) {
-      if (other.currency !== this.currency) {
-        throw new CurrencyMismatchError()
-      }
-
-      return this.times(other.units)
-    }
-
+  times (other: Biggable): Money {
     return Money.fromAmount(this.units.times(other), this.currency)
   }
 
-  div (other: Biggable | Money): Money {
-    if (other instanceof Money) {
-      if (other.currency !== this.currency) {
-        throw new CurrencyMismatchError()
-      }
-
-      return this.div(other.units)
-    }
-
+  div (other: Biggable): Money {
     return Money.fromAmount(this.units.div(other), this.currency)
   }
 

@@ -269,50 +269,18 @@ describe('Money.prototype.minus', () => {
 })
 
 describe('Money.prototype.times', () => {
-  it('multiplies two Money objects', () => {
-    const money = Money.fromCents('400', 'USD')
-    const other = Money.fromCents('200', 'USD')
-
-    expect(money.times(other)).toEqual(Money.fromCents('800', 'USD'))
-  })
-
-  it('multiplies the current unit by the other number', () => {
+  it('multiplies the current units by the other number', () => {
     const money = Money.fromCents('300', 'USD')
 
     expect(money.times('2')).toEqual(Money.fromCents(600, 'USD'))
   })
-
-  it('throws if multiplying a different currency', () => {
-    const money = Money.fromCents('1234', 'USD')
-    const other = Money.fromCents('1234', 'EUR')
-
-    expect(() => {
-      money.times(other)
-    }).toThrow(CurrencyMismatchError)
-  })
 })
 
 describe('Money.prototype.div', () => {
-  it('divides two Money objects', () => {
-    const money = Money.fromCents('300', 'USD')
-    const other = Money.fromCents('200', 'USD')
-
-    expect(money.div(other)).toEqual(Money.fromCents('150', 'USD'))
-  })
-
-  it('divides the current unit by the other number', () => {
+  it('divides the current units by the other number', () => {
     const money = Money.fromCents('300', 'USD')
 
     expect(money.div('2')).toEqual(Money.fromCents(150, 'USD'))
-  })
-
-  it('throws if dividing a different currency', () => {
-    const money = Money.fromCents('1234', 'USD')
-    const other = Money.fromCents('1234', 'EUR')
-
-    expect(() => {
-      money.div(other)
-    }).toThrow(CurrencyMismatchError)
   })
 })
 
